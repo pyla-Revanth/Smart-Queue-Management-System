@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #fdf2f8;
+            --primary-rgb: 253, 242, 248;
+            --accent: #f43f5e;
+            --accent-rgb: 244, 63, 94;
+            --surface: #ffffff;
+            --surface-rgb: 255, 255, 255;
+            --card: #ffffff;
+            --card-rgb: 255, 255, 255;
+            --text: #4c0519;
+            --text-rgb: 76, 5, 25;
+            --muted: #9f1239;
+            --success: #10b981;
+            --success-rgb: 16, 185, 129;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: rgba(244, 63, 94, 0.15);
+            --radius: 16px;
+            --font-heading: 'Syne', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-card: rgba(255, 255, 255, 0.9);
+            --shadow-sm: 0 4px 20px rgba(244, 63, 94, 0.08);
+            --shadow-md: 0 8px 30px rgba(244, 63, 94, 0.15);
+        }
+
+        :root[data-theme="dark"] {
+            --primary: #2a0a18;
+            --primary-rgb: 42, 10, 24;
+            --accent: #fb7185;
+            --accent-rgb: 251, 113, 133;
+            --surface: #4c0519;
+            --surface-rgb: 76, 5, 25;
+            --card: #701a35;
+            --card-rgb: 112, 26, 53;
+            --text: #ffe4e6;
+            --text-rgb: 255, 228, 230;
+            --muted: #fda4af;
+            --success: #34d399;
+            --success-rgb: 52, 211, 153;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --border: rgba(251, 113, 133, 0.2);
+            --glass-bg: rgba(42, 10, 24, 0.85);
+            --glass-card: rgba(112, 26, 53, 0.8);
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--primary);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 28px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-logo span {
+            color: var(--accent);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            padding: 7px 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 500;
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: var(--text);
+            background: rgba(var(--text-rgb), 0.06);
+        }
+
+        .nav-tab.active {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        .nav-badge {
+            font-size: 11px;
+            background: var(--accent);
+            color: #ffffff;
+            padding: 2px 7px;
+            border-radius: 20px;
+            margin-left: 6px;
+        }
+
+        .page {
+            display: none;
+            padding: 32px 28px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-title {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .page-sub {
+            color: var(--muted);
+            font-size: 15px;
+            margin-bottom: 32px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--glass-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card:hover {
+            border-color: rgba(var(--accent-rgb), 0.5);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .card-lg {
+            padding: 28px;
+        }
+
+        .service-card {
+            cursor: pointer;
+            text-align: center;
+            padding: 28px 20px;
+            background: var(--glass-card);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.15) 0%, transparent 70%);
+            transition: opacity 0.3s;
+        }
+
+        .service-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+        }
+
+        .service-card.selected {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.08);
+        }
+
+        .service-icon {
+            font-size: 38px;
+            margin-bottom: 14px;
+            display: block;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .service-name {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .service-meta {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .service-count {
+            display: inline-block;
+            background: rgba(var(--accent-rgb), 0.15);
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #fb7185);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.3);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.4);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(var(--text-rgb), 0.08);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(var(--text-rgb), 0.13);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #001a14;
+        }
+
+        .btn-success:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-danger {
+            background: rgba(var(--accent-rgb), 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(var(--accent-rgb), 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(var(--accent-rgb), 0.25);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px 16px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 800;
+        }
+
+        .stat-value.accent {
+            color: var(--accent);
+        }
+
+        .stat-value.success {
+            color: var(--success);
+        }
+
+        .stat-value.warning {
+            color: var(--warning);
+        }
+
+        .stat-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .token-display {
+            background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, var(--glass-bg) 100%);
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .token-display::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(var(--accent-rgb), 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .token-num {
+            font-family: var(--font-heading);
+            font-size: 80px;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .token-label {
+            font-size: 13px;
+            color: var(--muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .token-service {
+            font-size: 16px;
+            color: var(--text);
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .progress-bar-wrap {
+            background: rgba(var(--text-rgb), 0.06);
+            border-radius: 100px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 100px;
+            background: var(--accent);
+            transition: width 0.5s ease;
+        }
+
+        .queue-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            background: rgba(var(--card-rgb), 0.3);
+        }
+
+        .queue-row.serving {
+            border-color: var(--success);
+            background: rgba(var(--success-rgb), 0.06);
+        }
+
+        .queue-row.my-token {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.06);
+        }
+
+        .queue-token {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 700;
+            min-width: 60px;
+        }
+
+        .queue-name {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .queue-wait {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .badge-serving {
+            background: rgba(var(--success-rgb), 0.15);
+            color: var(--success);
+        }
+
+        .badge-waiting {
+            background: rgba(var(--text-rgb), 0.08);
+            color: var(--muted);
+        }
+
+        .badge-mine {
+            background: rgba(var(--accent-rgb), 0.15);
+            color: var(--accent);
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 7px;
+            display: block;
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 9px;
+            background: rgba(var(--text-rgb), 0.06);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+        }
+
+        select option {
+            background: var(--primary);
+            color: var(--text);
+        }
+
+        .alert {
+            padding: 13px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(var(--success-rgb), 0.12);
+            border: 1px solid rgba(var(--success-rgb), 0.25);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(var(--accent-rgb), 0.12);
+            border: 1px solid rgba(var(--accent-rgb), 0.25);
+            color: var(--accent);
+        }
+
+        .alert-info {
+            background: var(--glass-bg);
+            border: 1px solid rgba(var(--text-rgb), 0.12);
+            color: var(--text);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 24px 0;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 680px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ticker {
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .service-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px 6px 10px;
+            border-radius: 20px;
+            background: rgba(var(--text-rgb), 0.07);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            margin: 4px;
+        }
+
+        .service-pill-remove {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            padding: 0;
+            transition: color 0.15s;
+        }
+
+        .service-pill-remove:hover {
+            color: var(--accent);
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(var(--text-rgb), 0.15);
+            border-top-color: var(--text);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            display: inline-block;
+            margin-right: 6px;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .no-queue {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--muted);
+        }
+
+        .no-queue-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.4;
+        }
+
+        .admin-login-wrap {
+            max-width: 380px;
+            margin: 60px auto;
+        }
+
+        .service-stats-bar {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-bottom: 24px;
+        }
+
+        .service-stat-chip {
+            flex-shrink: 0;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: rgba(var(--card-rgb), 0.4);
+            border: 1px solid var(--border);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 110px;
+        }
+
+        .service-stat-chip.active {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.08);
+        }
+
+        .service-stat-chip-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .service-stat-chip-name {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .service-stat-chip-count {
+            font-size: 22px;
+            font-family: var(--font-heading);
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+
+        <nav class="nav">
+            <div class="nav-logo">Q<span>·</span>Flow</div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="navigate('home')">Services</button>
+                <button class="nav-tab" onclick="navigate('dashboard')" id="tab-dashboard">
+                    Dashboard <span class="live-dot" style="margin-left:2px;"></span>
+                </button>
+                <button class="nav-tab" onclick="navigate('mytoken')" id="tab-mytoken">
+                    My Token <span id="my-token-badge" style="display:none" class="nav-badge">!</span>
+                </button>
+                <button class="nav-tab" onclick="navigate('admin')" id="tab-admin">Admin</button>\n                <button class="nav-tab" onclick="toggleTheme()" id="btn-theme" title="Toggle Theme">🌓</button>
+            </div>
+        </nav>
+
+        <div id="page-home" class="page active">
+            <div class="page-title">Smart Queue Management</div>
+            <div class="page-sub">Select a service to join the queue instantly</div>
+
+            <div id="home-alert"></div>
+
+            <div class="grid-3" id="service-grid"></div>
+
+            <div style="margin-top: 32px;" id="join-section" style="display:none">
+                <div class="card card-lg" style="max-width: 480px;">
+                    <div class="section-title">Join Queue</div>
+                    <div id="selected-service-info" style="margin-bottom:20px;"></div>
+                    <div class="input-group">
+                        <label class="input-label">Your Name (optional)</label>
+                        <input type="text" id="join-name" placeholder="Enter your name..." />
+                    </div>
+                    <button class="btn btn-primary btn-block" id="join-btn" onclick="joinQueue()">
+                        Get Token Number
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-mytoken" class="page">
+            <div id="mytoken-content"></div>
+        </div>
+
+        <div id="page-dashboard" class="page">
+            <div class="page-title">Live Dashboard <span class="live-dot"></span></div>
+            <div class="page-sub" id="dashboard-updated">Auto-refreshing every 5 seconds</div>
+
+            <div class="service-stats-bar" id="dash-service-filter"></div>
+
+            <div id="dashboard-content"></div>
+        </div>
+
+        <div id="page-admin" class="page">
+            <div id="admin-login-section">
+                <div class="admin-login-wrap">
+                    <div class="page-title">Admin Access</div>
+                    <div class="page-sub" style="margin-bottom: 28px;">Enter admin credentials to continue</div>
+                    <div class="card card-lg">
+                        <div id="admin-login-alert"></div>
+                        <div class="input-group">
+                            <label class="input-label">Password</label>
+                            <input type="password" id="admin-pass" placeholder="Enter password..."
+                                onkeydown="if(event.key==='Enter')adminLogin()" />
+                        </div>
+                        <button class="btn btn-primary btn-block" onclick="adminLogin()">Sign In</button>
+                        <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:14px;">Default
+                            password: <code
+                                style="background:rgba(var(--text-rgb), 0.08);padding:2px 6px;border-radius:4px;">admin123</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admin-panel" style="display:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <div class="page-title">Admin Panel</div>
+                    <button class="btn btn-secondary btn-sm" onclick="adminLogout()">Sign Out</button>
+                </div>
+                <div class="page-sub">Manage queues and services</div>
+                <div id="admin-alert"></div>
+                <div class="admin-grid">
+                    <div>
+                        <div class="section-title">Queue Control</div>
+                        <div class="card" style="margin-bottom:16px;">
+                            <div class="input-group">
+                                <label class="input-label">Select Service</label>
+                                <select id="admin-service-select" onchange="adminServiceChanged()">
+                                    <option value="">Choose service...</option>
+                                </select>
+                            </div>
+                            <div id="admin-service-stats" style="margin-bottom:14px;"></div>
+                            <div class="input-group">
+                                <label class="input-label">Avg Time Per User (minutes)</label>
+                                <input type="number" id="admin-avg-time" min="1" max="60" value="3"
+                                    onchange="updateAvgTime()" />
+                            </div>
+                            <button class="btn btn-success btn-block" style="margin-bottom:10px;" onclick="serveNext()">
+                                ✓ Serve Next Token
+                            </button>
+                            <button class="btn btn-danger btn-block" onclick="resetQueue()">
+                                ↺ Reset Queue
+                            </button>
+                        </div>
+
+                        <div class="section-title">Manage Services</div>
+                        <div class="card">
+                            <div id="service-pills" style="margin-bottom:14px;min-height:40px;"></div>
+                            <div class="input-group" style="margin-bottom:10px;">
+                                <label class="input-label">Service Name</label>
+                                <input type="text" id="new-service-name" placeholder="e.g. Pharmacy" />
+                            </div>
+                            <div class="input-group" style="margin-bottom:10px;">
+                                <label class="input-label">Icon (emoji)</label>
+                                <input type="text" id="new-service-icon" placeholder="💊" style="width:80px;" />
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="addService()">+ Add Service</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                            <div class="section-title" style="margin-bottom:0;">All Tokens</div>
+                            <select id="admin-filter-service" onchange="renderAdminTokens()"
+                                style="width:auto;font-size:13px;padding:6px 12px;">
+                                <option value="all">All Services</option>
+                            </select>
+                        </div>
+                        <div id="admin-token-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        
+        // Theme logic
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+
+        const STATE = {
+            services: [
+                { id: 's1', name: 'Hospital', icon: '🏥', avgTime: 3, nextToken: 1, currentServing: 0, tokens: [] },
+                { id: 's2', name: 'Canteen', icon: '🍽️', avgTime: 3, nextToken: 1, currentServing: 0, tokens: [] },
+                { id: 's3', name: 'Bank', icon: '🏦', avgTime: 3, nextToken: 1, currentServing: 0, tokens: [] },
+            ],
+            myTokens: [],
+            adminLoggedIn: false,
+            currentPage: 'home',
+            selectedService: null,
+            dashFilter: 'all',
+        };
+
+        const ADMIN_PASS = 'admin123';
+
+        function getService(id) { return STATE.services.find(s => s.id === id); }
+
+        function navigate(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            const tabs = document.querySelectorAll('.nav-tab');
+            const map = { home: 0, dashboard: 1, mytoken: 2, admin: 3 };
+            tabs[map[page]].classList.add('active');
+            STATE.currentPage = page;
+            if (page === 'home') renderServices();
+            if (page === 'dashboard') renderDashboard();
+            if (page === 'mytoken') renderMyToken();
+            if (page === 'admin') renderAdminPage();
+        }
+
+        function showAlert(containerId, msg, type = 'success') {
+            const el = document.getElementById(containerId);
+            el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+            setTimeout(() => { el.innerHTML = ''; }, 3500);
+        }
+
+        function renderServices() {
+            const grid = document.getElementById('service-grid');
+            grid.innerHTML = STATE.services.map(s => {
+                const active = s.tokens.filter(t => t.tokenNum > s.currentServing).length;
+                return `<div class="service-card${STATE.selectedService === s.id ? ' selected' : ''}" onclick="selectService('${s.id}')">
+      <span class="service-icon">${s.icon}</span>
+      <div class="service-name">${s.name}</div>
+      <div class="service-meta">Avg ${s.avgTime} min/person</div>
+      <span class="service-count">${active} in queue</span>
+    </div>`;
+            }).join('');
+
+            const joinSection = document.getElementById('join-section');
+            if (STATE.selectedService) {
+                joinSection.style.display = 'block';
+                const svc = getService(STATE.selectedService);
+                document.getElementById('selected-service-info').innerHTML =
+                    `<div style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(var(--text-rgb), 0.04);border-radius:10px;">
+        <span style="font-size:28px;">${svc.icon}</span>
+        <div>
+          <div style="font-weight:600;font-size:16px;">${svc.name}</div>
+          <div style="font-size:13px;color:var(--muted);">Next token: #${svc.nextToken} · ${svc.tokens.filter(t => t.tokenNum > svc.currentServing).length} waiting</div>
+        </div>
+      </div>`;
+            } else {
+                joinSection.style.display = 'none';
+            }
+        }
+
+        function selectService(id) {
+            STATE.selectedService = id;
+            renderServices();
+        }
+
+        function joinQueue() {
+            if (!STATE.selectedService) return;
+            const svc = getService(STATE.selectedService);
+            const name = document.getElementById('join-name').value.trim() || 'Guest';
+            const btn = document.getElementById('join-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Generating...';
+            setTimeout(() => {
+                const token = {
+                    id: 'tk_' + Date.now(),
+                    tokenNum: svc.nextToken++,
+                    name,
+                    serviceId: svc.id,
+                    serviceName: svc.name,
+                    serviceIcon: svc.icon,
+                    joinedAt: new Date().toLocaleTimeString(),
+                    served: false,
+                };
+                svc.tokens.push(token);
+                STATE.myTokens.push(token);
+                document.getElementById('join-name').value = '';
+                STATE.selectedService = null;
+                btn.disabled = false;
+                btn.innerHTML = 'Get Token Number';
+                document.getElementById('my-token-badge').style.display = 'inline';
+                showAlert('home-alert', `✓ Token #${token.tokenNum} issued for ${svc.name}!`);
+                renderServices();
+                navigate('mytoken');
+            }, 800);
+        }
+
+        function calcWait(svc, tokenNum) {
+            const diff = tokenNum - svc.currentServing;
+            if (diff <= 0) return 0;
+            return Math.max(0, (diff - 1) * svc.avgTime);
+        }
+
+        function renderMyToken() {
+            const wrap = document.getElementById('mytoken-content');
+            if (!STATE.myTokens.length) {
+                wrap.innerHTML = `<div class="no-queue"><span class="no-queue-icon">🎫</span><div class="page-title" style="font-size:24px;">No tokens yet</div><p style="margin-top:8px;color:var(--muted);">Join a queue to see your token here</p><button class="btn btn-primary" style="margin-top:20px;" onclick="navigate('home')">Browse Services</button></div>`;
+                return;
+            }
+            wrap.innerHTML = `<div class="page-title">My Tokens</div><div class="page-sub" style="margin-bottom:24px;">Track your position in real time</div>`;
+            STATE.myTokens.forEach(token => {
+                const svc = getService(token.serviceId);
+                const wait = calcWait(svc, token.tokenNum);
+                const pos = Math.max(0, token.tokenNum - svc.currentServing);
+                const isServing = svc.currentServing === token.tokenNum;
+                const isDone = token.tokenNum < svc.currentServing;
+                const statusColor = isDone ? 'var(--muted)' : isServing ? 'var(--success)' : 'var(--accent)';
+                const statusText = isDone ? '✓ Served' : isServing ? '🔔 Your Turn Now!' : `${pos} ahead of you`;
+
+                wrap.innerHTML += `<div class="card card-lg" style="margin-bottom:20px;max-width:580px;border-color:${isServing ? 'var(--success)' : 'var(--border)'}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+        <span style="font-size:24px;">${svc.icon}</span>
+        <div>
+          <div style="font-weight:600;">${svc.name}</div>
+          <div style="font-size:13px;color:var(--muted);">Joined at ${token.joinedAt} · ${token.name}</div>
+        </div>
+        <div style="margin-left:auto;">
+          <span class="badge ${isDone ? 'badge-waiting' : isServing ? 'badge-serving' : 'badge-mine'}">${isDone ? 'Done' : isServing ? 'Now Serving' : 'Waiting'}</span>
+        </div>
+      </div>
+      <div class="token-display" style="${isDone ? 'opacity:0.5' : ''}">
+        <div class="token-label">Your Token</div>
+        <div class="token-num">${token.tokenNum}</div>
+        <div class="token-service">${statusText}</div>
+      </div>
+      <div class="grid-3" style="margin-top:20px;gap:12px;">
+        <div class="stat-card card" style="padding:14px;">
+          <div class="stat-label">Now Serving</div>
+          <div class="stat-value" style="font-size:28px;color:var(--success);">${svc.currentServing || '–'}</div>
+        </div>
+        <div class="stat-card card" style="padding:14px;">
+          <div class="stat-label">Est. Wait</div>
+          <div class="stat-value" style="font-size:28px;color:var(--warning);">${wait > 0 ? wait + 'm' : isDone ? '–' : 'Now'}</div>
+        </div>
+        <div class="stat-card card" style="padding:14px;">
+          <div class="stat-label">Position</div>
+          <div class="stat-value" style="font-size:28px;color:var(--accent);">${isDone ? '✓' : pos === 0 ? '🔔' : '#' + pos}</div>
+        </div>
+      </div>
+      ${!isDone ? `<div style="margin-top:14px;">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Queue Progress</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:${Math.min(100, ((svc.nextToken - pos) / Math.max(1, svc.nextToken)) * 100).toFixed(0)}%;background:${isServing ? 'var(--success)' : 'var(--accent)'}"></div>
+        </div>
+      </div>` : ''}
+    </div>`;
+            });
+        }
+
+        function renderDashboard() {
+            const filterWrap = document.getElementById('dash-service-filter');
+            filterWrap.innerHTML = `<div class="service-stat-chip${STATE.dashFilter === 'all' ? ' active' : ''}" onclick="dashFilter('all')">
+    <div class="service-stat-chip-icon">📊</div>
+    <div class="service-stat-chip-name">All</div>
+    <div class="service-stat-chip-count">${STATE.services.reduce((a, s) => a + s.tokens.filter(t => t.tokenNum > s.currentServing).length, 0)}</div>
+  </div>` +
+                STATE.services.map(s => {
+                    const q = s.tokens.filter(t => t.tokenNum > s.currentServing).length;
+                    return `<div class="service-stat-chip${STATE.dashFilter === s.id ? ' active' : ''}" onclick="dashFilter('${s.id}')">
+      <div class="service-stat-chip-icon">${s.icon}</div>
+      <div class="service-stat-chip-name">${s.name}</div>
+      <div class="service-stat-chip-count">${q}</div>
+    </div>`;
+                }).join('');
+
+            const content = document.getElementById('dashboard-content');
+            const services = STATE.dashFilter === 'all' ? STATE.services : STATE.services.filter(s => s.id === STATE.dashFilter);
+            if (!services.length) { content.innerHTML = '<div class="no-queue"><span class="no-queue-icon">📭</span><p>No services available</p></div>'; return; }
+
+            content.innerHTML = services.map(svc => {
+                const queue = svc.tokens.filter(t => t.tokenNum >= svc.currentServing).slice(0, 20);
+                const waiting = svc.tokens.filter(t => t.tokenNum > svc.currentServing).length;
+                const totalIssued = svc.nextToken - 1;
+                return `<div class="card card-lg" style="margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <span style="font-size:28px;">${svc.icon}</span>
+        <div style="flex:1;">
+          <div style="font-family:var(--font-heading);font-size:20px;font-weight:700;">${svc.name}</div>
+          <div style="font-size:13px;color:var(--muted);">${svc.avgTime} min/person · ${totalIssued} total issued</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div style="text-align:center;padding:10px 18px;background:rgba(var(--success-rgb), 0.1);border-radius:10px;border:1px solid rgba(var(--success-rgb), 0.2);">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">SERVING</div>
+            <div style="font-family:var(--font-heading);font-size:26px;font-weight:800;color:var(--success);">${svc.currentServing || '–'}</div>
+          </div>
+          <div style="text-align:center;padding:10px 18px;background:rgba(var(--accent-rgb), 0.1);border-radius:10px;border:1px solid rgba(var(--accent-rgb), 0.2);">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">WAITING</div>
+            <div style="font-family:var(--font-heading);font-size:26px;font-weight:800;color:var(--accent);">${waiting}</div>
+          </div>
+        </div>
+      </div>
+      ${queue.length === 0 ? `<div class="no-queue" style="padding:24px;"><span style="font-size:32px;opacity:0.3;">✓</span><p style="color:var(--muted);margin-top:8px;">Queue is empty</p></div>` :
+                        queue.map(t => {
+                            const isServing = t.tokenNum === svc.currentServing;
+                            const wait = calcWait(svc, t.tokenNum);
+                            const isMe = STATE.myTokens.some(m => m.id === t.id);
+                            return `<div class="queue-row${isServing ? ' serving' : ''}${isMe ? ' my-token' : ''}">
+            <div class="queue-token" style="color:${isServing ? 'var(--success)' : isMe ? 'var(--accent)' : 'var(--text)'};">#${t.tokenNum}</div>
+            <div class="queue-name">
+              <div style="font-weight:500;font-size:14px;">${t.name}</div>
+              <div style="font-size:12px;color:var(--muted);">Joined ${t.joinedAt}</div>
+            </div>
+            <div class="queue-wait">${isServing ? '' : wait + 'm wait'}</div>
+            <span class="badge ${isServing ? 'badge-serving' : isMe ? 'badge-mine' : 'badge-waiting'}">${isServing ? 'Now Serving' : isMe ? 'My Token' : 'Waiting'}</span>
+          </div>`;
+                        }).join('')
+                    }
+    </div>`;
+            }).join('');
+
+            document.getElementById('dashboard-updated').innerHTML = `<span class="live-dot"></span> Last updated: ${new Date().toLocaleTimeString()} · Auto-refreshing every 5s`;
+        }
+
+        function dashFilter(id) {
+            STATE.dashFilter = id;
+            renderDashboard();
+        }
+
+        function renderAdminPage() {
+            if (!STATE.adminLoggedIn) {
+                document.getElementById('admin-login-section').style.display = 'block';
+                document.getElementById('admin-panel').style.display = 'none';
+            } else {
+                document.getElementById('admin-login-section').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                renderAdminContent();
+            }
+        }
+
+        function renderAdminContent() {
+            const sel = document.getElementById('admin-service-select');
+            const curVal = sel.value;
+            sel.innerHTML = '<option value="">Choose service...</option>' +
+                STATE.services.map(s => `<option value="${s.id}"${curVal === s.id ? ' selected' : ''}>${s.icon} ${s.name}</option>`).join('');
+            if (curVal) adminServiceChanged();
+
+            const filterSel = document.getElementById('admin-filter-service');
+            const curFilter = filterSel.value;
+            filterSel.innerHTML = '<option value="all">All Services</option>' +
+                STATE.services.map(s => `<option value="${s.id}"${curFilter === s.id ? ' selected' : ''}>${s.icon} ${s.name}</option>`).join('');
+
+            const pills = document.getElementById('service-pills');
+            pills.innerHTML = STATE.services.map(s =>
+                `<span class="service-pill">${s.icon} ${s.name}<button class="service-pill-remove" onclick="removeService('${s.id}')" title="Remove">×</button></span>`
+            ).join('');
+
+            renderAdminTokens();
+        }
+
+        function adminServiceChanged() {
+            const id = document.getElementById('admin-service-select').value;
+            const statsDiv = document.getElementById('admin-service-stats');
+            if (!id) { statsDiv.innerHTML = ''; return; }
+            const svc = getService(id);
+            const waiting = svc.tokens.filter(t => t.tokenNum > svc.currentServing).length;
+            document.getElementById('admin-avg-time').value = svc.avgTime;
+            statsDiv.innerHTML = `<div class="grid-3" style="gap:10px;">
+    <div class="card stat-card" style="padding:12px;">
+      <div class="stat-label">Serving</div>
+      <div class="stat-value success" style="font-size:24px;">${svc.currentServing || '–'}</div>
+    </div>
+    <div class="card stat-card" style="padding:12px;">
+      <div class="stat-label">Waiting</div>
+      <div class="stat-value accent" style="font-size:24px;">${waiting}</div>
+    </div>
+    <div class="card stat-card" style="padding:12px;">
+      <div class="stat-label">Issued</div>
+      <div class="stat-value" style="font-size:24px;">${svc.nextToken - 1}</div>
+    </div>
+  </div>`;
+        }
+
+        function serveNext() {
+            const id = document.getElementById('admin-service-select').value;
+            if (!id) { showAlert('admin-alert', '⚠ Please select a service first', 'error'); return; }
+            const svc = getService(id);
+            const nextPending = svc.tokens.find(t => t.tokenNum > svc.currentServing);
+            if (!nextPending) { showAlert('admin-alert', 'No more tokens in queue for this service', 'error'); return; }
+            svc.currentServing = nextPending.tokenNum;
+            showAlert('admin-alert', `✓ Now serving token #${svc.currentServing} in ${svc.name}`);
+            renderAdminContent();
+            if (STATE.currentPage === 'dashboard') renderDashboard();
+            if (STATE.currentPage === 'mytoken') renderMyToken();
+        }
+
+        function resetQueue() {
+            const id = document.getElementById('admin-service-select').value;
+            if (!id) { showAlert('admin-alert', '⚠ Please select a service first', 'error'); return; }
+            if (!confirm('Reset this queue? All tokens will be cleared.')) return;
+            const svc = getService(id);
+            STATE.myTokens = STATE.myTokens.filter(t => t.serviceId !== id);
+            svc.tokens = []; svc.nextToken = 1; svc.currentServing = 0;
+            document.getElementById('my-token-badge').style.display = STATE.myTokens.length ? 'inline' : 'none';
+            showAlert('admin-alert', `✓ Queue reset for ${svc.name}`);
+            renderAdminContent();
+        }
+
+        function updateAvgTime() {
+            const id = document.getElementById('admin-service-select').value;
+            if (!id) return;
+            const val = parseInt(document.getElementById('admin-avg-time').value) || 3;
+            getService(id).avgTime = Math.max(1, val);
+        }
+
+        function addService() {
+            const name = document.getElementById('new-service-name').value.trim();
+            const icon = document.getElementById('new-service-icon').value.trim() || '🏢';
+            if (!name) { showAlert('admin-alert', '⚠ Please enter a service name', 'error'); return; }
+            if (STATE.services.find(s => s.name.toLowerCase() === name.toLowerCase())) {
+                showAlert('admin-alert', '⚠ Service already exists', 'error'); return;
+            }
+            STATE.services.push({ id: 's' + Date.now(), name, icon, avgTime: 3, nextToken: 1, currentServing: 0, tokens: [] });
+            document.getElementById('new-service-name').value = '';
+            document.getElementById('new-service-icon').value = '';
+            showAlert('admin-alert', `✓ Service "${name}" added`);
+            renderAdminContent();
+        }
+
+        function removeService(id) {
+            if (STATE.services.length <= 1) { showAlert('admin-alert', '⚠ Must have at least one service', 'error'); return; }
+            if (!confirm('Remove this service?')) return;
+            STATE.services = STATE.services.filter(s => s.id !== id);
+            STATE.myTokens = STATE.myTokens.filter(t => t.serviceId !== id);
+            document.getElementById('my-token-badge').style.display = STATE.myTokens.length ? 'inline' : 'none';
+            showAlert('admin-alert', '✓ Service removed');
+            renderAdminContent();
+        }
+
+        function renderAdminTokens() {
+            const filterVal = document.getElementById('admin-filter-service').value;
+            const wrap = document.getElementById('admin-token-list');
+            let tokens = [];
+            STATE.services.forEach(svc => {
+                if (filterVal === 'all' || svc.id === filterVal) {
+                    svc.tokens.forEach(t => tokens.push({ ...t, svc }));
+                }
+            });
+            if (!tokens.length) {
+                wrap.innerHTML = `<div class="no-queue" style="padding:32px;"><span class="no-queue-icon" style="font-size:32px;">🎫</span><p>No tokens yet</p></div>`;
+                return;
+            }
+            wrap.innerHTML = tokens.sort((a, b) => b.tokenNum - a.tokenNum).map(t => {
+                const isServing = t.svc.currentServing === t.tokenNum;
+                const isDone = t.tokenNum < t.svc.currentServing;
+                return `<div class="queue-row${isServing ? ' serving' : ''}">
+      <div class="queue-token" style="color:${isServing ? 'var(--success)' : isDone ? 'var(--muted)' : 'var(--text)'}">#${t.tokenNum}</div>
+      <div class="queue-name">
+        <div style="font-weight:500;font-size:13px;">${t.name}</div>
+        <div style="font-size:11px;color:var(--muted);">${t.svc.icon} ${t.svc.name} · ${t.joinedAt}</div>
+      </div>
+      <span class="badge ${isServing ? 'badge-serving' : isDone ? 'badge-waiting' : 'badge-mine'}">${isServing ? 'Serving' : isDone ? 'Done' : 'Waiting'}</span>
+    </div>`;
+            }).join('');
+        }
+
+        function adminLogin() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === ADMIN_PASS) {
+                STATE.adminLoggedIn = true;
+                document.getElementById('admin-pass').value = '';
+                renderAdminPage();
+            } else {
+                showAlert('admin-login-alert', '⚠ Incorrect password', 'error');
+            }
+        }
+
+        function adminLogout() {
+            STATE.adminLoggedIn = false;
+            renderAdminPage();
+        }
+
+        renderServices();
+        setInterval(() => {
+            if (STATE.currentPage === 'dashboard') renderDashboard();
+            if (STATE.currentPage === 'mytoken') renderMyToken();
+        }, 5000);
+    </script>
+</body>
+
+</html>
